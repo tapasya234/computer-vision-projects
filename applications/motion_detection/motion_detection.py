@@ -4,7 +4,7 @@ import os
 
 inputFilePath = os.path.join(
     os.getcwd(),
-    "python3/compVision/applications/motion_detection/videos/motion_test.mp4",
+    "python3/computer-vision-projects/applications/motion_detection/videos/motion_test.mp4",
 )
 
 
@@ -51,7 +51,7 @@ sizeQuad = (int(2 * frameWidth), int(2 * frameHeight))
 videoWriter = cv2.VideoWriter(
     os.path.join(
         os.getcwd(),
-        "python3/compVision/applications/motion_detection/videos/motion_detected_output.mp4",
+        "python3/computer-vision-projects/applications/motion_detection/videos/motion_detected_output.mp4",
     ),
     cv2.VideoWriter.fourcc(*"XVID"),
     frameFPS,

@@ -1,5 +1,5 @@
 import os
 
 DATA_PATH = os.path.join(
-    os.getcwd(), "python3/compVision/applications/virtual_billboard/"
+    os.getcwd(), "python3/computer-vision-projects/applications/virtual_billboard/"
 )

@@ -1,5 +1,6 @@
 import os
 
 DATA_PATH = os.path.join(
-    os.getcwd(), "python3/compVision/applications/embed_video_using_ArUco_markers/"
+    os.getcwd(),
+    "python3/computer-vision-projects/applications/embed_video_using_ArUco_markers/",
 )

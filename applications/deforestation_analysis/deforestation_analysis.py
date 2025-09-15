@@ -9,7 +9,8 @@ def readImage(imgName: str, imgType=cv2.IMREAD_COLOR) -> cv2.typing.MatLike:
     return cv2.imread(
         os.path.join(
             os.getcwd(),
-            "python3/compVision/applications/deforestation_analysis/images/" + imgName,
+            "python3/computer-vision-projects/applications/deforestation_analysis/images/"
+            + imgName,
         ),
         imgType,
     )

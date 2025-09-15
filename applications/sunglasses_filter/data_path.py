@@ -1,5 +1,5 @@
 import os
 
 DATA_PATH = os.path.join(
-    os.getcwd(), "python3/compVision/applications/sunglasses_filter"
+    os.getcwd(), "python3/computer-vision-projects/applications/sunglasses_filter"
 )
