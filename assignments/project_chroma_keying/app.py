@@ -20,6 +20,12 @@ import sys
 import numpy as np
 import glob
 
+projectTitle = "Chroma-Keying"
+projectDescriptionPart1 = "Given an input video with a green screen background, the program will automatically"
+projectDescriptionPart2 = (
+    "detect the green screen and replace it with the provided backgrounds."
+)
+
 # Window names
 outputWindowName = "Output Video"
 inputWindowName = "Input Video"
@@ -38,19 +44,128 @@ maxHue = 90
 maxSaturation = 255
 maxValue = 255
 
+# Values needed for the Background Trackbar
+backgroundsDescription = (
+    "Backgrounds: Decides the number of backgrounds to use. Minimun value is 1."
+)
+backgroundsTrackbarName = "Backgrounds"
+maxBackgrounds = 5
+backgroundsCount = 1
+
 # Values needed for the Tolerance Trackbar
+toleranceTrackbarDescription = (
+    "Tolerance: Decides the range of green colour to use when remove the background."
+)
 toleranceTrackbarName = "Tolerance"
 maxToleranceValue = 25
 toleranceValue = 5
 
 # Values needed for the Softness Trackbar
+softnessTrackbarDescription = "Softness: Decides the value of softness (continuity) around the edges of the foreground."
 softnessTrackbarName = "Softness"
-maxSoftnessValue = 5
+maxSoftnessValue = 50
 softnessValue = 0
 
-# Details related to the Patches selected by the uder
+# Values needed for the WaitTimer Trackbar
+waitTimeTrackbarDescription = (
+    "Wait Time: Decides the value of wait time for each frame."
+)
+waitTimerTrackbarName = "Wait Timer"
+maxWaitTimerValue = 10
+waitTimerValue = 1
+
+# Details related to the Patches selected by the user
+greenColourPatchesDescriptionPart1 = "Patches: The user can use the mouse to either select a single point or a specific patch"
+greenColourPatchesDescriptionPart2 = (
+    "on the input window to select mean green values to remove from the background."
+)
 topLeftPosition = []
 bottomRightPosition = []
+
+userControlsDescription = "The user can easily control various aspects of the project."
+
+
+def addTextToImg(
+    img,
+    text,
+    orgPoint,
+    fontFace=cv2.FONT_HERSHEY_PLAIN,
+    fontColour=(255, 255, 255),
+    fontScale=1.3,
+    fontThickness=1,
+):
+    """
+    addTextToImg adds text to the provided image based on the parameters provided.
+
+    :param img: Image on which the text will be added.
+    :param text: The text to be added.
+    :param orgPoint: Origin Point of the text. Expected to be a tuple of (x, y).
+    :param fontFace: The style of font to use to style the text.
+    :param fontColour: The colour of the font to use to style the text.
+    :param fontScale: The scale of the font to use to style the text.
+    :param fontThickness: The thickness of the font to use to style the text.
+    """
+    cv2.putText(
+        img=img,
+        text=text,
+        org=orgPoint,
+        fontFace=fontFace,
+        fontScale=fontScale,
+        color=fontColour,
+        thickness=fontThickness,
+        lineType=cv2.LINE_AA,
+    )
+
+
+def generateProjectDescriptionImage(inputWidth, inputHeight):
+    """
+    generateProjectDescriptionImage generated a image of the provided width and height and adds specific text to provide details about the project.
+
+    :param inputWidth: Width of the project description image.
+    :param inputHeight: Height of the project description image.
+    """
+    projectDescriptionImg = np.zeros((inputHeight, inputWidth, 3), dtype=np.uint8)
+    addTextToImg(
+        projectDescriptionImg,
+        projectTitle,
+        (int(inputWidth * 0.20), int(inputHeight * 0.10)),
+        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+        fontScale=3,
+        fontColour=(0, 255, 0),
+        fontThickness=2,
+    )
+    addTextToImg(
+        projectDescriptionImg,
+        projectDescriptionPart1,
+        (int(inputWidth * 0.10), int(inputHeight * 0.20)),
+    )
+    addTextToImg(
+        projectDescriptionImg,
+        projectDescriptionPart2,
+        (int(inputWidth * 0.10), int(inputHeight * 0.27)),
+    )
+    textOrgPointWidth = int(inputWidth * 0.10)
+    textOrgPointHeightPercentage = 0.40
+    for text in [
+        userControlsDescription,
+        greenColourPatchesDescriptionPart1,
+        greenColourPatchesDescriptionPart2,
+        backgroundsDescription,
+        toleranceTrackbarDescription,
+        softnessTrackbarDescription,
+        waitTimeTrackbarDescription,
+    ]:
+        print(text)
+        addTextToImg(
+            projectDescriptionImg,
+            text,
+            (textOrgPointWidth, int(inputHeight * textOrgPointHeightPercentage)),
+        )
+        textOrgPointHeightPercentage += 0.07
+        print(textOrgPointHeightPercentage)
+
+    cv2.imshow("Project Description", projectDescriptionImg)
+    cv2.waitKey(0)
 
 
 def calcMeanGreenPatchColour(inputHueChannel):
@@ -88,6 +203,9 @@ def calcMeanGreenPatchColour(inputHueChannel):
 
 
 def calcMask(inputHSV, meanGreenColour):
+    """
+    calcMask calculated the foreground and background mask based on the provided green colour, toleranceValue and softnessValue.
+    """
     backgroundMask = cv2.inRange(
         inputHSV,
         (
@@ -101,13 +219,15 @@ def calcMask(inputHSV, meanGreenColour):
             maxValue,
         ),
     )
-    cv2.imshow("BG Mask", backgroundMask)
+
+    foregroundMask = cv2.bitwise_not(backgroundMask)
     if softnessValue > 0:
         kernelSize = (softnessValue * 2) + 1
-        backgroundMask = cv2.GaussianBlur(backgroundMask, (kernelSize, kernelSize), 0)
-        cv2.imshow("BG Mask - Blurred", backgroundMask)
-    foregroundMask = cv2.bitwise_not(backgroundMask)
-    cv2.imshow("FG Mask", foregroundMask)
+        foregroundMask = cv2.dilate(
+            foregroundMask,
+            cv2.getStructuringElement(cv2.MORPH_RECT, (kernelSize, kernelSize)),
+        )
+        foregroundMask = cv2.GaussianBlur(foregroundMask, (kernelSize, kernelSize), 0)
     return backgroundMask, foregroundMask
 
 
@@ -128,9 +248,20 @@ def updateBackground(backgroundImg, inputFrame):
     updatedBackground = cv2.bitwise_and(
         backgroundImg, backgroundImg, mask=backgroundMask
     )
-    updatedImg = cv2.bitwise_xor(updatedBackground, updatedForeground)
-    cv2.imshow(outputWindowName, updatedImg)
-    return
+    return cv2.bitwise_xor(updatedBackground, updatedForeground)
+
+
+def onBackgroundsChanged(*args):
+    """
+    onBackgroundsChanged is the callback used to handle the Backgrounds trackbar on the input image.
+
+    :param data: Contains the backgroundImage and inputImage that is needed to process the image.
+    """
+    global backgroundsCount
+
+    backgroundsCount = cv2.getTrackbarPos(backgroundsTrackbarName, inputWindowName)
+    if backgroundsCount == 0:
+        backgroundsCount = 1
 
 
 def onToleranceChanged(x, data):
@@ -155,6 +286,17 @@ def onSoftnessChanged(x, data):
 
     softnessValue = cv2.getTrackbarPos(softnessTrackbarName, inputWindowName)
     updateBackground(data[backgroundImgKey], data[inputFrameKey])
+
+
+def onWaitTimerChanged(*args):
+    """
+    onWaitTimerChanged is the callback used to handle the Wait Timer trackbar on the input image.
+    It updates how long the Input and Output window should wait on every frame of the video. It doesn't affect the output video file generated.
+    If value is set to 0, the window will wait indefinitely until a key press.
+    """
+    global waitTimerValue
+
+    waitTimerValue = cv2.getTrackbarPos(waitTimerTrackbarName, inputWindowName)
 
 
 def onMouseClicked(action, x, y, flags, data):
@@ -183,8 +325,8 @@ def readAndResizeBackgrounds(inputWidth, inputHeight):
     return backgroundImages
 
 
-# cap = cv2.VideoCapture(DATA_PATH + "greenScreenInput/greenscreen-demo.mp4")
-cap = cv2.VideoCapture(DATA_PATH + "greenScreenInput/greenscreen-asteroid.mp4")
+cap = cv2.VideoCapture(DATA_PATH + "greenScreenInput/greenscreen-demo.mp4")
+# cap = cv2.VideoCapture(DATA_PATH + "greenScreenInput/greenscreen-asteroid.mp4")
 if not cap.isOpened():
     print("Unable to open input video")
     sys.exit()
@@ -193,75 +335,74 @@ inputWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 inputHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 inputFrameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
+generateProjectDescriptionImage(inputWidth, inputHeight)
+
 backgrounds = readAndResizeBackgrounds(inputWidth, inputHeight)
 backgroundDuration = inputFrameCount // len(backgrounds)
-# print("#background: {} duration: {}".format(len(backgrounds), backgroundDuration))
+
+videoWriter = cv2.VideoWriter(
+    DATA_PATH + "chrome-keying-output.mp4",
+    cv2.VideoWriter.fourcc(*"XVID"),
+    # DATA_PATH + "chrome-keying-output.avi",
+    # cv2.VideoWriter.fourcc("M", "J", "P", "G"),
+    int(cap.get(cv2.CAP_PROP_FPS)),
+    (inputWidth, inputHeight),
+)
 
 frameCount = 0
 backgroundIndex = 0
 callbackData = {backgroundImgKey: [], inputFrameKey: []}
-# while True:
-#     hasFrame, frame = cap.read()
-#     if not hasFrame:
-#         break
+while True:
+    hasFrame, frame = cap.read()
+    if not hasFrame:
+        break
 
-#     if frameCount % backgroundDuration == 0:
-#         backgroundIndex = (backgroundIndex + 1) % len(backgrounds)
+    if backgroundsCount > 1 and frameCount % backgroundDuration == 0:
+        backgroundIndex = (backgroundIndex + 1) % backgroundsCount
 
-#     callbackData[backgroundImgKey] = backgrounds[backgroundIndex]
-#     callbackData[inputFrameKey] = frame
+    callbackData[backgroundImgKey] = backgrounds[backgroundIndex]
+    callbackData[inputFrameKey] = frame
 
-#     cv2.createTrackbar(
-#         toleranceTrackbarName,
-#         inputWindowName,
-#         toleranceValue,
-#         maxToleranceValue,
-#         partial(onToleranceChanged, data=callbackData),
-#         # lambda x: onToleranceChanged(x, backgroundImg=backgrounds[backgroundIndex]),
-#         # onToleranceChanged(backgrounds[backgroundIndex]),
-#     )
-#     cv2.createTrackbar(
-#         softnessTrackbarName,
-#         inputWindowName,
-#         softnessValue,
-#         maxSoftnessValue,
-#         partial(onSoftnessChanged, data=callbackData),
-#     )
-#     cv2.setMouseCallback(inputWindowName, onMouseClicked, callbackData)
-#     cv2.imshow(inputWindowName, frame)
+    cv2.createTrackbar(
+        backgroundsTrackbarName,
+        inputWindowName,
+        backgroundsCount,
+        maxBackgrounds,
+        onBackgroundsChanged,
+    )
+    cv2.createTrackbar(
+        toleranceTrackbarName,
+        inputWindowName,
+        toleranceValue,
+        maxToleranceValue,
+        partial(onToleranceChanged, data=callbackData),
+    )
+    cv2.createTrackbar(
+        softnessTrackbarName,
+        inputWindowName,
+        softnessValue,
+        maxSoftnessValue,
+        partial(onSoftnessChanged, data=callbackData),
+    )
+    cv2.createTrackbar(
+        waitTimerTrackbarName,
+        inputWindowName,
+        waitTimerValue,
+        maxWaitTimerValue,
+        onWaitTimerChanged,
+    )
+    cv2.setMouseCallback(inputWindowName, onMouseClicked, callbackData)
+    cv2.imshow(inputWindowName, frame)
 
-#     updateBackground(backgrounds[backgroundIndex], frame)
-#     frameCount += 1
+    updatedImg = updateBackground(backgrounds[backgroundIndex], frame)
+    frameCount += 1
 
-#     if cv2.waitKey(1) == 27:
-#         break
+    cv2.imshow(outputWindowName, updatedImg)
+    videoWriter.write(updatedImg)
 
-hasFrame, frame = cap.read()
-
-callbackData[backgroundImgKey] = backgrounds[backgroundIndex]
-callbackData[inputFrameKey] = frame
-
-cv2.createTrackbar(
-    toleranceTrackbarName,
-    inputWindowName,
-    toleranceValue,
-    maxToleranceValue,
-    partial(onToleranceChanged, data=callbackData),
-    # lambda x: onToleranceChanged(x, backgroundImg=backgrounds[backgroundIndex]),
-    # onToleranceChanged(backgrounds[backgroundIndex]),
-)
-cv2.createTrackbar(
-    softnessTrackbarName,
-    inputWindowName,
-    softnessValue,
-    maxSoftnessValue,
-    partial(onSoftnessChanged, data=callbackData),
-)
-cv2.setMouseCallback(inputWindowName, onMouseClicked, callbackData)
-cv2.imshow(inputWindowName, frame)
-
-updateBackground(backgrounds[backgroundIndex], frame)
-cv2.waitKey(0)
+    if cv2.waitKey(waitTimerValue * 10) == 27:
+        break
 
 cap.release()
+videoWriter.release()
 cv2.destroyAllWindows()
