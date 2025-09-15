@@ -1,2 +1,12 @@
-# Don't include scratch files used for quizzes
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+
+# Byte-compiled / optimized / DLL files #
+######################
+__pycache__/
+
+# Don't include scratch files used for quizzes #
+######################
 quizzes/
