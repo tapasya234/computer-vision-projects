@@ -7,6 +7,19 @@
 ######################
 __pycache__/
 
+# Ignore input/output video files
+######################
+*.mp4
+*.avi
+
+# Ignore models and configs needed to use Deep Learning algorithms
+######################
+*.weights
+*.pb
+*.onnx
+*.caffemodel
+
+
 # Don't include scratch files used for quizzes #
 ######################
 quizzes/
