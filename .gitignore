@@ -18,6 +18,7 @@ __pycache__/
 *.pb
 *.onnx
 *.caffemodel
+*.yaml
 
 
 # Don't include scratch files used for quizzes #
