@@ -20,14 +20,16 @@ GOOD_MATCHES_PERCENT = 0.5
 
 # FIND KEYPOINTS AND DESCRIPTORS FOR EACH IMAGE
 # Read 1st image of the scene, reference image
-img1 = cv2.imread(DATA_PATH + "scene/scene1.jpg")
+# img1 = cv2.imread(DATA_PATH + "scene1.jpg")
+img1 = cv2.imread(DATA_PATH + "scene2.jpg")
 img1GS = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 
 # Read 3rd image of the scene, image to align with reference image
-img2 = cv2.imread(DATA_PATH + "scene/scene2.jpg")
+# img2 = cv2.imread(DATA_PATH + "scene2.jpg")
+img2 = cv2.imread(DATA_PATH + "scene3.jpg")
 img2GS = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-orb = cv2.ORB().create()
+orb = cv2.ORB().create(MAX_FEATURES)
 keypoints1, descriptors1 = orb.detectAndCompute(img1GS, None)
 keypoints2, descriptors2 = orb.detectAndCompute(img2GS, None)
 
