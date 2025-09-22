@@ -10,6 +10,16 @@ classLabelNoGlasses = 1
 classLabelGlasses = 0
 predictionsLabel = {classLabelNoGlasses: "No Glasses", classLabelGlasses: "Glasses"}
 
+
+def trainModel(trainFeatures, trainLabels) -> cv2.ml.SVM:
+    # 3. Train SVM Model
+    # Specify the parameters for SVM Classifier and train the model using the training features obtained above.
+    model = svm_classifier.svmInit(C=2.5, gamma=0.02)
+    model = svm_classifier.svmTrain(model, trainFeatures, trainLabels)
+    model.save(DATA_PATH + "models/eyeGlassesClassifierModel.yml")
+    return model
+
+
 # 1. Compute train and test data
 trainDataGlasses, trainLabelsGlasses, testDataGlasses, testLabelsGlasses = (
     data_preperation.getTrainTestData(
@@ -49,17 +59,13 @@ testHOG = hog_feature_descriptor.computerHOG(hog_feature_descriptor.hog, testIma
 trainFeatures = svm_classifier.prepareDataForSVM(trainHOG)
 testFeatures = svm_classifier.prepareDataForSVM(testHOG)
 
-# 3. Train SVM Model
-# Specify the parameters for SVM Classifier and train the model using the training features obtained above.
-model = svm_classifier.svmInit(C=2.5, gamma=0.02)
-model = svm_classifier.svmTrain(model, trainFeatures, trainLabels)
-model.save(DATA_PATH + "models/eyeGlassesClassifierModel.yml")
+
+# model = trainModel(trainFeatures, trainLabels)
 
 # 4. Evaluate the model and check the accuracy
 # Load the provided model
-# savedModel = cv2.ml.SVM().load(DATA_PATH + "models/eyeGlassesClassifierModel.yml")
+model = cv2.ml.SVM().load(DATA_PATH + "models/eyeGlassesClassifierModel.yml")
 accuracy = svm_classifier.svmEvaluate(model, testFeatures, testLabels)
-
 
 # 5. Perform the classification on a specific image
 wrongPredictionsFileNames = []
@@ -73,7 +79,7 @@ def predictAndDisplayImage(
     roi = getCroppedEyeRegion(img)
 
     fileName = imageFilePath.split("/")[-1]
-    cv2.imwrite(DATA_PATH + "glassesDataset/" + fileName, roi)
+    # cv2.imwrite(DATA_PATH + "glassesDataset/" + fileName, roi)
     imgHeight, imgWidth = img.shape[:2]
     if roi is None:
         cv2.putText(
