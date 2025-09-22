@@ -17,6 +17,9 @@ from data_path import DATA_PATH
 
 MAX_FEATURES = 1000
 GOOD_MATCHES_PERCENT = 0.1
+
+# The minimum matches count is set this low because the method is not very reliable in real world environments,
+# because of changes in luminosity, white balance, focus, spatial position of the object etc.,.
 MIN_MATCH_COUNT = 10
 
 # FIND KEYPOINTS AND DESCRIPTORS FOR EACH IMAGE
