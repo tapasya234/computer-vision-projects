@@ -157,7 +157,4 @@ def generateProjectDescriptionImage(inputWidth, inputHeight):
         )
         textOrgPointHeightPercentage += 0.07
 
-    cv2.imshow("Project Description", projectDescriptionImg)
-    cv2.waitKey(0)
-
-    cv2.destroyAllWindows()
+    return projectDescriptionImg

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # The constants used when creating a blob
-OBJECTNESS_THRESHOLD = 0.7
+OBJECTNESS_THRESHOLD = 0.5
 CONFIDENCE_THREHSOLD = 0.7
 NMS_THRESHOLD = 0.4
 MEAN = [0, 0, 0]
