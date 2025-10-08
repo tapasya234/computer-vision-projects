@@ -7,5 +7,3 @@ DATA_PATH = os.path.join(
 
 CONFIG_PATH = DATA_PATH + "models/yolov4-tiny.cfg"
 MODEL_PATH = DATA_PATH + "models/yolov4-tiny.weights"
-
-CLASSES_PATH = DATA_PATH + "models/coco.names"
