@@ -1,7 +1,7 @@
 import os
 
 DATA_PATH = os.path.join(
-    os.getcwd(), "python3/compVision/neural_network/super_resolution/"
+    os.getcwd(), "python3/computer-vision-projects/neural_network/super_resolution/"
 )
 
 EAST_MODEL_PATH = DATA_PATH + "models/frozen_east_text_detection.pb"

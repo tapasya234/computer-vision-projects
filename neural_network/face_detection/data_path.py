@@ -1,7 +1,7 @@
 import os
 
 DATA_PATH = os.path.join(
-    os.getcwd(), "python3/compVision/neural_network/face_detection/"
+    os.getcwd(), "python3/computer-vision-projects/neural_network/face_detection/"
 )
 FACE_DETECTION_MODEL_PATH = (
     DATA_PATH + "models/res10_300x300_ssd_iter_140000.caffemodel"
