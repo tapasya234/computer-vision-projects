@@ -1,16 +1,19 @@
 # OS generated files #
 ######################
-.DS_Store
-.DS_Store?
+**/.DS_Store
+**/.DS_Store?
 
 # Byte-compiled / optimized / DLL files #
 ######################
 __pycache__/
 
-# Ignore input/output video files #
+# Ignore input / output files #
 ######################
 *.mp4
 *.avi
+# *jpg
+# *jpeg
+# *png
 
 # Ignore models and configs needed to use Deep Learning/Machine Learning algorithms #
 ######################
@@ -20,6 +23,7 @@ __pycache__/
 *.caffemodel
 *.yaml
 *.yml
+*.dat
 
 
 # Scratch files used for quizzes #
