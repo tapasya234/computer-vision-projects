@@ -1,19 +1,11 @@
-from typing import Sequence
 import cv2
 from matplotlib import pyplot
-import os
 import numpy
+from data_path import DATA_PATH
 
 
-def readImage(imgName: str, imgType=cv2.IMREAD_COLOR) -> cv2.typing.MatLike:
-    return cv2.imread(
-        os.path.join(
-            os.getcwd(),
-            "computer-vision-projects/applications/deforestation_analysis/images/"
-            + imgName,
-        ),
-        imgType,
-    )
+def readImage(imgName: str):
+    return cv2.imread(DATA_PATH + "images/" + imgName)
 
 
 def plotRawImageBRGHisogram(img, title="", yscale="linear"):
