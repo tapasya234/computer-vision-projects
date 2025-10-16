@@ -2,5 +2,5 @@ import os
 
 DATA_PATH = os.path.join(
     os.getcwd(),
-    "python3/computer-vision-projects/applications/eye_glasses_classifier_HOG_SVM/",
+    "computer-vision-projects/applications/eye_glasses_classifier_HOG_SVM/",
 )

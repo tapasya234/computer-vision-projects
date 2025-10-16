@@ -10,8 +10,7 @@ from PIL import Image
 def getFilePath(fileName: str):
     return os.path.join(
         os.getcwd(),
-        "python3/computer-vision-projects/applications/streamlit/face_detection/"
-        + fileName,
+        "computer-vision-projects/applications/streamlit/face_detection/" + fileName,
     )
 
 

@@ -2,7 +2,7 @@ import os
 
 DATA_PATH = os.path.join(
     os.getcwd(),
-    "python3/computer-vision-projects/neural_network/text_detection_recognition/",
+    "computer-vision-projects/neural_network/text_detection_recognition/",
 )
 
 EAST_MODEL_PATH = DATA_PATH + "models/frozen_east_text_detection.pb"

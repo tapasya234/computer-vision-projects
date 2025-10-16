@@ -2,5 +2,5 @@ import os
 
 DATA_PATH = os.path.join(
     os.getcwd(),
-    "python3/computer-vision-projects/assignments/morphological_operations/",
+    "computer-vision-projects/assignments/morphological_operations/",
 )

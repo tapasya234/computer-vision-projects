@@ -2,5 +2,5 @@ import os
 
 DATA_PATH = os.path.join(
     os.getcwd(),
-    "python3/computer-vision-projects/assignments/resize_image_using_trackbar/",
+    "computer-vision-projects/assignments/resize_image_using_trackbar/",
 )
