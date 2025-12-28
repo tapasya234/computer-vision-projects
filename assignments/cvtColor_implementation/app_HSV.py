@@ -17,9 +17,7 @@ def convertToHSV(image):
 
     S = np.zeros_like(V)
     S[V != 0] = (delta[V != 0] / V[V != 0]) * 255
-    s = S
     S = np.round(S).astype(int)
-    # S = np.where(np.round(S, 1) - np.floor(S) >= 0.5, np.ceil(S), np.round(S))
 
     H = np.zeros_like(V)
     H[delta != 0] = np.where(
@@ -36,34 +34,9 @@ def convertToHSV(image):
         ),
     )
     H[H < 0] = H[H < 0] + 360
-    h = H / 2
     H = np.round(H / 2).astype(int)
     V = np.round(V * 255).astype(int)
 
-    imgHSV_cv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    H2, S2, V2 = cv2.split(imgHSV_cv)
-
-    countS = 0
-    countH = 0
-    for i in range(image.shape[0]):
-        for j in range(image.shape[1]):
-            if S[i][j] != S2[i][j]:
-                print(
-                    "i: {} j: {} S_rounded: {} S_openCV: {} S_float: {}".format(
-                        i, j, S[i][j], S2[i][j], s[i][j]
-                    )
-                )
-                countS += 1
-            if H[i][j] != H2[i][j]:
-                print(
-                    "i: {} j: {} H_rounded: {} H_openCV: {} H_float: {}".format(
-                        i, j, H[i][j], H2[i][j], h[i][j]
-                    )
-                )
-                countH += 1
-
-    print(countS)
-    print(countH)
     return np.uint8(cv2.merge([H, S, V]))
 
 
